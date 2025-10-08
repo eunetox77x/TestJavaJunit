@@ -1,6 +1,7 @@
 import org.example.App;
 import org.example.Produto;
 import org.example.Venda;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,72 +16,116 @@ public class AppTest {
 
     @Test
     public void testCriarprodutoValorValido() {
-        assertEquals("Caneta", produto.getNome());
-        assertEquals(2.5, produto.getPreco());
-        assertEquals(100, produto.getEstoque());
+        Assertions.assertEquals("Caneta", produto.getNome());
+        Assertions.assertEquals(2.5, produto.getPreco());
+        Assertions.assertEquals(100, produto.getEstoque());
     }
 
     @Test
     public void testCriarprodutoPrecoNegativo() {
-        assertEquals("Caneta", produto.getNome());
-        assertEquals(-1, produto.getPreco());
-        assertEquals(100, produto.getEstoque());
+        produto.setPreco(-1);
+        Assertions.assertEquals("Caneta", produto.getNome());
+        Assertions.assertEquals(-1, produto.getPreco());
+        Assertions.assertEquals(100, produto.getEstoque());
     }
 
     @Test
     public void testCriarprodutoEstoqueNegativo() {
-        assertEquals("Caneta", produto.getNome());
-        assertEquals(2.5, produto.getPreco());
-        assertEquals(-10, produto.getEstoque());
+        produto.setEstoque(-10);
+        Assertions.assertEquals("Caneta", produto.getNome());
+        Assertions.assertEquals(2.5, produto.getPreco());
+        Assertions.assertEquals(-10, produto.getEstoque());
     }
 
     @Test
     public void testAlterarNomeProdutoValorValido() {
         produto.setNome("Lápis");
-        assertEquals("Lápis", produto.getNome());
-        assertEquals(2.5, produto.getPreco());
-        assertEquals(100, produto.getEstoque());
+        Assertions.assertEquals("Lápis", produto.getNome());
+        Assertions.assertEquals(2.5, produto.getPreco());
+        Assertions.assertEquals(100, produto.getEstoque());
     }
 
     @Test
     public void testAlterarPrecoValorValido() {
         produto.setPreco(1.5);
-        assertEquals("Caneta", produto.getNome());
-        assertEquals(1.5, produto.getPreco());
-        assertEquals(100, produto.getEstoque());
+        Assertions.assertEquals("Caneta", produto.getNome());
+        Assertions.assertEquals(1.5, produto.getPreco());
+        Assertions.assertEquals(100, produto.getEstoque());
     }
     @Test
     public void testAlterarEstoqueValorPositivo(){
         produto.setEstoque(50);
-        assertEquals("Caneta", produto.getNome());
-        assertEquals(2.5, produto.getPreco());
-        assertEquals(50, produto.getEstoque());
+        Assertions.assertEquals("Caneta", produto.getNome());
+        Assertions.assertEquals(2.5, produto.getPreco());
+        Assertions.assertEquals(50, produto.getEstoque());
     }
     @Test
     public void testAlterarValorNegativo(){
-        assertEquals("Caneta", produto.getNome());
-        assertEquals(-1.5, produto.getPreco());
-        assertEquals(100, produto.getEstoque());
+        produto.setPreco(-1.5);
+        Assertions.assertEquals("Caneta", produto.getNome());
+        Assertions.assertEquals(-1.5, produto.getPreco());
+        Assertions.assertEquals(100, produto.getEstoque());
     }
     @Test
     public void testVendaQuantidadeMenorEstoque(){
         Venda venda = new Venda(produto, 20);
-        assertTrue(venda.realizarVenda());
-        assertEquals(80, produto.getEstoque());
-        assertEquals(50.0, venda.getTotalVenda());
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(80, produto.getEstoque());
+        Assertions.assertEquals(50.0, venda.getTotalVenda());
     }
     @Test
     public void testVendaQuantidadeIgualEstoque(){
         Venda venda = new Venda(produto, 100);
-        assertTrue(venda.realizarVenda());
-        assertEquals(0, produto.getEstoque());
-        assertEquals(250.0, venda.getTotalVenda());
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(0, produto.getEstoque());
+        Assertions.assertEquals(250.0, venda.getTotalVenda());
     }
     @Test
     public void testVendaQuantidadeMaiorEstoque(){
+        produto.setEstoque(150);
         Venda venda = new Venda(produto, 150);
-        assertTrue(venda.realizarVenda());
-        assertEquals(100, produto.getEstoque());
-        assertEquals(0.0, venda.getTotalVenda());
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(0, produto.getEstoque());
+        Assertions.assertEquals(375, venda.getTotalVenda());
+    }
+    @Test
+    public void testCalculoTotalVenda(){
+        Venda venda = new Venda(produto, 10);
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(25.0, venda.getTotalVenda());
+    }
+    @Test
+    public void testAumentoEstoqueaposVenda(){
+        Venda venda = new Venda(produto, 30);
+        Assertions.assertTrue(venda.realizarVenda());
+        produto.aumentarEstoque(20);
+        Assertions.assertEquals(90, produto.getEstoque());
+    }
+    @Test
+    public void testDimiuirEstoqueVendaSucedida(){
+        Venda venda = new Venda(produto, 40);
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(60, produto.getEstoque());
+    }
+    @Test
+    public void testVendaprodutoInexistente(){
+        Produto produtoInexistente = new Produto("Borracha", 1.0, 0);
+        Venda venda = new Venda(produtoInexistente, 10);
+        Assertions.assertFalse(venda.realizarVenda());
+        Assertions.assertEquals(0, produtoInexistente.getEstoque());
+        Assertions.assertEquals(0.0, venda.getTotalVenda());
+    }
+    @Test
+    public void testVendaQuantidadeNegativa(){
+        Venda venda = new Venda(produto, -10);
+        Assertions.assertFalse(venda.realizarVenda());
+        Assertions.assertEquals(100, produto.getEstoque());
+        Assertions.assertEquals(0.0, venda.getTotalVenda());
+    }
+    @Test
+    public void testAlterarEstoqueTentativaEstoqueInsuficiente(){
+        boolean resultado = produto.diminuirEstoque(150);
+        Assertions.assertFalse(resultado);
+        Assertions.assertEquals(100, produto.getEstoque());
     }
 }
