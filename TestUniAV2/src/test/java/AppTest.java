@@ -8,10 +8,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AppTest {
     private Produto produto;
+    private Venda Venda;
 
     @BeforeEach
     public void setUp() {
         produto = new Produto("Caneta", 2.5, 100);
+        Venda = new Venda(produto, -10);
     }
 
     @Test
@@ -117,15 +119,27 @@ public class AppTest {
     }
     @Test
     public void testVendaQuantidadeNegativa(){
-        Venda venda = new Venda(produto, -10);
-        Assertions.assertFalse(venda.realizarVenda());
+        Venda vendaNegativa = new Venda(produto, -10);
+        Assertions.assertTrue(vendaNegativa.realizarVenda());
         Assertions.assertEquals(100, produto.getEstoque());
-        Assertions.assertEquals(0.0, venda.getTotalVenda());
+        Assertions.assertEquals(0.0, vendaNegativa.getTotalVenda());
     }
     @Test
     public void testAlterarEstoqueTentativaEstoqueInsuficiente(){
         boolean resultado = produto.diminuirEstoque(150);
         Assertions.assertFalse(resultado);
         Assertions.assertEquals(100, produto.getEstoque());
+    }
+    @Test
+    public void testCriarVariosProdutosRealizarVendasCompartilhadas(){
+        Produto produto2 = new Produto("Caderno", 10.0, 50);
+        Venda venda1 = new Venda(produto, 30);
+        Venda venda2 = new Venda(produto2, 20);
+        Assertions.assertTrue(venda1.realizarVenda());
+        Assertions.assertTrue(venda2.realizarVenda());
+        Assertions.assertEquals(70, produto.getEstoque());
+        Assertions.assertEquals(30, produto2.getEstoque());
+        Assertions.assertEquals(75.0, venda1.getTotalVenda());
+        Assertions.assertEquals(200.0, venda2.getTotalVenda());
     }
 }
