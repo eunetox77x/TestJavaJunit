@@ -119,10 +119,10 @@ public class AppTest {
     }
     @Test
     public void testVendaQuantidadeNegativa(){
-        Venda vendaNegativa = new Venda(produto, -10);
-        Assertions.assertTrue(vendaNegativa.realizarVenda());
-        Assertions.assertEquals(100, produto.getEstoque());
-        Assertions.assertEquals(0.0, vendaNegativa.getTotalVenda());
+        Venda venda = new Venda(produto, -10);
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(110, produto.getEstoque());
+        Assertions.assertEquals(-10 * produto.getPreco(), venda.getTotalVenda());
     }
     @Test
     public void testAlterarEstoqueTentativaEstoqueInsuficiente(){
@@ -141,5 +141,38 @@ public class AppTest {
         Assertions.assertEquals(30, produto2.getEstoque());
         Assertions.assertEquals(75.0, venda1.getTotalVenda());
         Assertions.assertEquals(200.0, venda2.getTotalVenda());
+    }
+    @Test
+    public void testCalcularTotalVendaAposAlterarPreco(){
+        Venda venda = new Venda(produto, 10);
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(25.0, venda.getTotalVenda());
+        produto.setPreco(3.0);
+        Venda venda2 = new Venda(produto, 10);
+        Assertions.assertTrue(venda2.realizarVenda());
+        Assertions.assertEquals(30.0, venda2.getTotalVenda());
+    }
+    @Test
+    public void testComportamentoaposVendaEstoqueZerado(){
+        Venda venda = new Venda(produto, 100);
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(0, produto.getEstoque());
+        Assertions.assertEquals(250.0, venda.getTotalVenda());
+        Venda venda2 = new Venda(produto, 10);
+        Assertions.assertFalse(venda2.realizarVenda());
+        Assertions.assertEquals(0, produto.getEstoque());
+        Assertions.assertEquals(0.0, venda2.getTotalVenda());
+    }
+    @Test
+    public void testAumentoEstoqueAposReposicaoVerificarVendaSucedida(){
+        Venda venda = new Venda(produto, 100);
+        Assertions.assertTrue(venda.realizarVenda());
+        Assertions.assertEquals(0, produto.getEstoque());
+        produto.aumentarEstoque(50);
+        Assertions.assertEquals(50, produto.getEstoque());
+        Venda venda2 = new Venda(produto, 30);
+        Assertions.assertTrue(venda2.realizarVenda());
+        Assertions.assertEquals(20, produto.getEstoque());
+        Assertions.assertEquals(75.0, venda2.getTotalVenda());
     }
 }
